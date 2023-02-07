@@ -89,4 +89,11 @@ public class PayStationImpl implements PayStation {
         totalMoney = 0;
         return temp;
     }
+
+    public static void main(String[] args) {
+        System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
+        Scanner console = new Scanner(System.in);
+        int townChoice = console.nextInt();
+        System.out.println("You have selected: " + townChoice);
+    }
 }
