@@ -91,9 +91,57 @@ public class PayStationImpl implements PayStation {
     }
 
     public static void main(String[] args) {
-        System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
-        Scanner console = new Scanner(System.in);
-        int townChoice = console.nextInt();
-        System.out.println("You have selected: " + townChoice);
+        Scanner scanner = new Scanner(System.in);
+
+        int choice;
+        do {
+            //print out the different options for the user and save as an int
+            System.out.println("\nPlease select a choice:");
+            System.out.println("1. Deposit Coins");
+            System.out.println("2. Display");
+            System.out.println("3. Buy Ticket");
+            System.out.println("4. Cancel");
+            System.out.println("5. Empty (Admin)");
+            System.out.println("6. Change Rate Strategy (Admin)");
+            System.out.print("Enter choice (1-6): ");
+
+            choice = scanner.nextInt();//get the choice
+
+            switch (choice) {//switch case for the options
+                case 1:
+                    System.out.println("Deposit Coins selected");
+                    break;
+                case 2:
+                    System.out.println("Display selected");
+                    break;
+                case 3:
+                    System.out.println("Buy Ticket selected");
+                    break;
+                case 4:
+                    System.out.println("Cancel selected");
+                    break;
+                case 5://case 5 and 6 both require a password as an admin, password is 1234
+                case 6:
+                    System.out.print("Enter password: ");
+                    String password = scanner.next();
+                    if (password.equals("1234")) {
+                        if (choice == 5) {
+                            System.out.println("Empty (Admin) selected");
+                        }
+                        else {
+                            System.out.println("Change Rate Strategy (Admin) selected");
+                        }
+                    }
+                    else {
+                        System.out.println("Invalid password. Access denied.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+        while (choice != 4);//menu will loop until 4 is chosen
+
+        System.out.println("Exiting program...");
     }
 }
