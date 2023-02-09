@@ -94,6 +94,7 @@ public class PayStationImpl implements PayStation {
         Scanner scanner = new Scanner(System.in);
 
         int choice;
+        //this code uses a do-while loop for the options
         do {
             //print out the different options for the user and save as an int
             System.out.println("\nPlease select a choice:");
@@ -126,9 +127,11 @@ public class PayStationImpl implements PayStation {
                     String password = scanner.next();
                     if (password.equals("1234")) {
                         if (choice == 5) {
+                            //code to empty
                             System.out.println("Empty (Admin) selected");
                         }
                         else {
+                            //code to change the rate strategy
                             System.out.println("Change Rate Strategy (Admin) selected");
                         }
                     }
