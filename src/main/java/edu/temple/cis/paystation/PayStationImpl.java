@@ -30,6 +30,81 @@ public class PayStationImpl implements PayStation {
         insertedSoFar = timeBought = totalMoney = 0;
         coinMap = new HashMap<>();
     }
+
+    public void main(String[] args) throws IllegalCoinException {
+        Scanner scanner = new Scanner(System.in);
+
+        int choice;
+        //this code uses a do-while loop for the options
+        do {
+            //print out the different options for the user and save as an int
+            System.out.println("\nPlease select a choice:");
+            System.out.println("1. Deposit Coins");
+            System.out.println("2. Display");
+            System.out.println("3. Buy Ticket");
+            System.out.println("4. Cancel");
+            System.out.println("5. Empty (Admin)");
+            System.out.println("6. Change Rate Strategy (Admin)");
+            System.out.print("Enter choice (1-6): ");
+
+            choice = scanner.nextInt();//get the choice
+
+            switch (choice) {//switch case for the options
+                case 1: //Depositing coins
+                    System.out.println("Deposit Coins selected");
+                    System.out.println("Enter the coin value (5, 10, 25) and press enter. To stop depositing coins, type done without entering a value:");
+                    int coinValue;
+                    while (true) {//this will loop until the user enters done
+                        if (scanner.hasNextInt()) {
+                            coinValue = scanner.nextInt();
+                            addPayment(coinValue);
+                            System.out.println("Enter the next coin value (5, 10, 25) or type done to stop depositing coins:");
+                        } else {
+                            break;
+                        }
+                    }
+                    break;
+                case 2:
+                    System.out.println("Display selected");
+                    int display = readDisplay();
+                    System.out.println("Time purchased: " + display + " minutes");
+                    break;
+                case 3:
+                    System.out.println("Buy Ticket selected");
+                    Receipt receipt = buy();
+                    //receipt object created from the buy() function
+                    System.out.println("Parking receipt purchased.");
+                    System.out.println("Receipt valid for " + receipt.value() + " minutes.");
+                    break;
+                case 4:
+                    System.out.println("Cancel selected");
+                    break;
+                case 5://case 5 and 6 both require a password as an admin, password is 1234
+                case 6:
+                    System.out.print("Enter password: ");
+                    String password = scanner.next();
+                    if (password.equals("1234")) {
+                        if (choice == 5) {
+                            //code to empty
+                            System.out.println("Empty (Admin) selected");
+                        }
+                        else {
+                            //code to change the rate strategy
+                            System.out.println("Change Rate Strategy (Admin) selected");
+                        }
+                    }
+                    else {
+                        System.out.println("Invalid password. Access denied.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+        while (choice != 4);//menu will loop until 4 is chosen
+
+        System.out.println("Exiting program...");
+    }
     
     @Override
     public void addPayment(int coinValue)
@@ -90,61 +165,4 @@ public class PayStationImpl implements PayStation {
         return temp;
     }
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-
-        int choice;
-        //this code uses a do-while loop for the options
-        do {
-            //print out the different options for the user and save as an int
-            System.out.println("\nPlease select a choice:");
-            System.out.println("1. Deposit Coins");
-            System.out.println("2. Display");
-            System.out.println("3. Buy Ticket");
-            System.out.println("4. Cancel");
-            System.out.println("5. Empty (Admin)");
-            System.out.println("6. Change Rate Strategy (Admin)");
-            System.out.print("Enter choice (1-6): ");
-
-            choice = scanner.nextInt();//get the choice
-
-            switch (choice) {//switch case for the options
-                case 1:
-                    System.out.println("Deposit Coins selected");
-                    break;
-                case 2:
-                    System.out.println("Display selected");
-                    break;
-                case 3:
-                    System.out.println("Buy Ticket selected");
-                    break;
-                case 4:
-                    System.out.println("Cancel selected");
-                    break;
-                case 5://case 5 and 6 both require a password as an admin, password is 1234
-                case 6:
-                    System.out.print("Enter password: ");
-                    String password = scanner.next();
-                    if (password.equals("1234")) {
-                        if (choice == 5) {
-                            //code to empty
-                            System.out.println("Empty (Admin) selected");
-                        }
-                        else {
-                            //code to change the rate strategy
-                            System.out.println("Change Rate Strategy (Admin) selected");
-                        }
-                    }
-                    else {
-                        System.out.println("Invalid password. Access denied.");
-                    }
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-        while (choice != 4);//menu will loop until 4 is chosen
-
-        System.out.println("Exiting program...");
-    }
 }
