@@ -171,19 +171,27 @@ public class PayStationImpl implements PayStation {
                     int townChoice = scanner.nextInt();
 
                     switch (townChoice) {
-                        case 1:
+                        case 1://change rateStrategy to the chosen strategy and pass to changeRateStrategy
                             System.out.println("You have selected Alphatown");
                             rateStrategy = new LinearRateStrategy1();
                             changeRateStrategy(rateStrategy);
                             break;
                         case 2:
                             System.out.println("You have selected Betatown");
+                            rateStrategy = new ProgressiveRateStrategy();
+                            changeRateStrategy(rateStrategy);
                             break;
                         case 3:
                             System.out.println("You have selected Gammatown");
+                            //here we input the date manually for testing purposes
+                            int dayOfWeek = Calendar.MONDAY;
+                            rateStrategy = new AlternatingRate1(dayOfWeek);
+                            changeRateStrategy(rateStrategy);
                             break;
                         case 4:
                             System.out.println("You have selected Deltatown");
+                            rateStrategy = new LinearRateStrategy2();
+                            changeRateStrategy(rateStrategy);
                             break;
                         case 5:
                             System.out.println("You have selected Omegatown");
