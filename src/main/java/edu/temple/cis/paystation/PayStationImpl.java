@@ -169,6 +169,9 @@ public class PayStationImpl implements PayStation {
                     System.out.println("5. Omegatown");
 
                     int townChoice = scanner.nextInt();
+                    //here we input the date manually for testing purposes
+                    int dayOfWeek = Calendar.MONDAY;
+
 
                     switch (townChoice) {
                         case 1://change rateStrategy to the chosen strategy and pass to changeRateStrategy
@@ -184,7 +187,6 @@ public class PayStationImpl implements PayStation {
                         case 3:
                             System.out.println("You have selected Gammatown");
                             //here we input the date manually for testing purposes
-                            int dayOfWeek = Calendar.MONDAY;
                             rateStrategy = new AlternatingRate1(dayOfWeek);
                             changeRateStrategy(rateStrategy);
                             break;
@@ -195,6 +197,7 @@ public class PayStationImpl implements PayStation {
                             break;
                         case 5:
                             System.out.println("You have selected Omegatown");
+                            rateStrategy = new AlternatingRate2(dayOfWeek);
                             break;
                         default:
                             System.out.println("Invalid selection. Please try again.");

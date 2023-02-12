@@ -15,6 +15,8 @@ public class AlternatingRate2 implements RateStrategy {
         if (dayOfWeek >= Calendar.MONDAY && dayOfWeek <= Calendar.FRIDAY) {
             return amount / 5 * 2;
         } else {
+            //free on weekends so return 0
+            System.out.println("Parking is free on weekends!");
             return 0;
         }
     }
