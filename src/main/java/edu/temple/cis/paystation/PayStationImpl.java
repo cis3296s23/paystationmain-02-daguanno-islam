@@ -1,5 +1,6 @@
 package edu.temple.cis.paystation;
 import java.util.*;
+import java.util.Calendar;
 
 /**
  * Implementation of the pay station.
@@ -20,10 +21,10 @@ import java.util.*;
  * implied. You may study, use, modify, and distribute it for non-commercial
  * purposes. For any commercial use, see http://www.baerbak.com/
  */
-public class PayStationImpl implements PayStation {
-    private int insertedSoFar, timeBought, totalMoney;
-    private Map<Integer, Integer> coinMap;
 
+public class PayStationImpl implements PayStation {
+    private int insertedSoFar, timeBought, totalMoney, townChoice;
+    private Map<Integer, Integer> coinMap;
 
     // Constructor initializes instance variables
     public PayStationImpl(){
@@ -90,9 +91,61 @@ public class PayStationImpl implements PayStation {
         return temp;
     }
 
+    public void changeRateLinear1() {
+        timeBought = insertedSoFar / 5 * 2;
+    }
+
+    public void changeRateLinear2() {
+        timeBought = insertedSoFar / 5;
+    }
+
+    public void changeRateAlternating1(int dayOfWeek) {
+        if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
+            timeBought =  (insertedSoFar * 2) / 5;
+        } else {//if a weekday then progressive rate
+            if (insertedSoFar < 150) {
+                timeBought =  (insertedSoFar * 2) / 5;
+            }
+            else if ((insertedSoFar >= 150) && (insertedSoFar < 350)) {
+                double d = ((insertedSoFar - 150) * 0.3) + 60;
+                timeBought =  (int) d;
+            }
+            else {
+                timeBought = (insertedSoFar - 350) / 5 + 120;
+            }
+        }
+    }
+
+    public void changeRateAlternating2(int dayOfWeek) {
+        if (dayOfWeek >= Calendar.MONDAY && dayOfWeek <= Calendar.FRIDAY) {
+            timeBought = insertedSoFar / 5 * 2;
+        } else {
+            System.out.println("Parking is free on weekends!");
+            System.out.println("Coins have been returned back.");
+            cancel();
+        }
+    }
+    
+    public void changeRateProgressive() {
+        
+        if (insertedSoFar < 150) {
+            timeBought = (insertedSoFar * 2) / 5;
+        }
+        else if ((insertedSoFar >= 150) && (insertedSoFar < 350)) {
+            double d = ((insertedSoFar - 150) * 0.3) + 60;
+            timeBought = (int) d;
+        }
+        else {
+            timeBought = (insertedSoFar - 350) / 5 + 120;
+        }
+    }
+
+
     public static void main(String[] args) throws IllegalCoinException {
         PayStationImpl ps = new PayStationImpl();
         boolean complete = false;
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         // Town Choice Input
         System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
@@ -103,6 +156,15 @@ public class PayStationImpl implements PayStation {
             townChoice = console.nextInt();
         }
         System.out.println("You have selected: " + townChoice);
+        if (townChoice == 2) {
+            ps.changeRateProgressive();
+        } else if (townChoice == 3) {
+            ps.changeRateAlternating1(dayOfWeek);
+        } else if (townChoice == 4) {
+            ps.changeRateLinear2();
+        } else {
+            ps.changeRateAlternating2(dayOfWeek);
+        }
 
         // Menu Options
         int optionChoice;
@@ -171,7 +233,22 @@ public class PayStationImpl implements PayStation {
                     System.out.println("2. Betatown");
                     System.out.println("3. Gammatown");
                     System.out.println("4. Deltatown");
-                    System.out.println("5. Omegatown");                }
+                    System.out.println("5. Omegatown");
+                    int rateChange = console.nextInt();
+                    if ((rateChange < 1) || (rateChange > 5)) {
+                        System.out.println("Invalid entry, try again.");
+                    } else if (rateChange == 1) {
+                        ps.changeRateLinear1();
+                    } else if (rateChange == 2) {
+                        ps.changeRateProgressive();
+                    } else if (rateChange == 3) {
+                        ps.changeRateAlternating1(dayOfWeek);
+                    } else if (rateChange == 4) {
+                        ps.changeRateLinear2();
+                    } else {
+                        ps.changeRateAlternating2(dayOfWeek);
+                    }
+                }
             } else if (optionChoice == 7) {
                 System.exit(0);
             }
