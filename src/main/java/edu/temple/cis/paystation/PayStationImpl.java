@@ -21,9 +21,9 @@ import java.util.*;
  * purposes. For any commercial use, see http://www.baerbak.com/
  */
 public class PayStationImpl implements PayStation {
-    
     private int insertedSoFar, timeBought, totalMoney;
     private Map<Integer, Integer> coinMap;
+
 
     // Constructor initializes instance variables
     public PayStationImpl(){
@@ -90,7 +90,9 @@ public class PayStationImpl implements PayStation {
         return temp;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalCoinException {
+        PayStationImpl ps = new PayStationImpl();
+        boolean complete = false;
 
         // Town Choice Input
         System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
@@ -103,35 +105,76 @@ public class PayStationImpl implements PayStation {
         System.out.println("You have selected: " + townChoice);
 
         // Menu Options
-        System.out.println("Choose an option:\n1) Deposit coins\n2) Display Time Bought\n3) Buy Ticket\n4) Admin Options\n");
-        int optionChoice = console.nextInt();
-        while ((optionChoice < 1) || (optionChoice > 4)) {
-            System.out.println("Invalid input; please reselect valid option. ");
+        int optionChoice;
+        do {
+            System.out.println("");
+            System.out.println("Choose an option:");
+            System.out.println("1) Deposit coins");
+            System.out.println("2) Display Time Bought");
+            System.out.println("3) Buy Ticket");
+            System.out.println("4) Cancel");
+            System.out.println("5) Empty (Admin)");
+            System.out.println("6) Change Rate Strategy (Admin)");
+            System.out.println("7) Exit");
             optionChoice = console.nextInt();
-        }
-
-        switch (optionChoice) {
-            case 1:
-            System.out.println("Deposit coins here; valid coins are 5, 10, 25. Type 'continue' when done depositing coins: ");
-            int coin;
-            boolean done = false;
-            while () {
-                
+            while ((optionChoice < 1) || (optionChoice > 7)) {
+                System.out.println("Invalid input; please reselect valid option. ");
+                optionChoice = console.nextInt();
             }
-        }
 
-        // If Admin Chosen, validate password.
-        if (optionChoice == 4) {
-            System.out.print("Please enter admin password: ");
-            int passwordEntry = console.nextInt();
-            if (passwordEntry == 123) {
-                System.out.println("Access granted, Please select one of the following options:\n1) Empty\n2) Change Rate Strategy");
-            } else {
-                System.out.println("Invalid password, failsafe protection activating; paystation shutting off");
+            if (optionChoice == 1) {
+                System.out.println("Deposit coins here; valid coins are 5, 10, 25.");
+                int coin;
+                boolean done = false;
+                while (!done) {
+                    coin = console.nextInt();
+                    if (coin == 0) {
+                        System.out.println("Coins sucessfully deposited.");
+                        break;
+                    } else {
+                        ps.addPayment(coin);
+                        System.out.println("Payment added. Continue entering coins or press 0 to exit: ");
+                    }
+                }
+
+            } else if (optionChoice == 2) {
+                System.out.println("You selected the display.");
+                int display = ps.readDisplay();
+                System.out.println("Total time purchased: " + display + " minutes.");
+
+            } else if (optionChoice == 3) {
+                System.out.println("Buy Ticket selected.");
+                Receipt receipt = ps.buy();
+                System.out.println("Parking receipt purchased.");
+                System.out.println("Receipt valid for " + receipt.value() + " minutes.");
+
+            } else if (optionChoice == 4) {
+                System.out.println("Cancel selected.\nHere are your coins back: " + ps.cancel());
+
+            } else if ((optionChoice == 5) || (optionChoice == 6)) {
+                System.out.print("Please enter admin password: ");
+                int passwordEntry = console.nextInt();
+                if (passwordEntry == 123) {
+                    System.out.println("Access granted");
+                } else {
+                    System.out.println("Invalid password, failsafe protection activating; paystation shutting off");
+                    System.exit(0);
+                }
+                if (optionChoice == 5) {
+                    ps.empty();
+                    System.out.println("Pay Station has been emptied");
+                }
+                if (optionChoice == 6) {
+                    System.out.println("Change Rate Strategy (Admin) selected");
+                    System.out.println("Please choose one of the following options: ");
+                    System.out.println("1. Alphatown");
+                    System.out.println("2. Betatown");
+                    System.out.println("3. Gammatown");
+                    System.out.println("4. Deltatown");
+                    System.out.println("5. Omegatown");                }
+            } else if (optionChoice == 7) {
                 System.exit(0);
             }
-            optionChoice = console.nextInt();
-            // TODO: admin options
-        }
+        } while (!complete);
     }
 }
