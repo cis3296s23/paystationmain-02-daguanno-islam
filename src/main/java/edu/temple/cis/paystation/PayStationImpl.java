@@ -242,15 +242,15 @@ public class PayStationImpl implements PayStation {
                     if ((rateChange < 1) || (rateChange > 5)) {
                         System.out.println("Invalid entry, try again.");
                     } else if (rateChange == 1) {
-                        ps.changeRateLinear1();
+                        ps.townChoice = 1;
                     } else if (rateChange == 2) {
-                        ps.changeRateProgressive();
+                        ps.townChoice = 2;
                     } else if (rateChange == 3) {
-                        ps.changeRateAlternating1(ps.dayOfWeek);
+                        ps.townChoice = 3;
                     } else if (rateChange == 4) {
-                        ps.changeRateLinear2();
+                        ps.townChoice = 4;
                     } else {
-                        ps.changeRateAlternating2(ps.dayOfWeek);
+                        ps.townChoice = 5;
                     }
                 }
             } else if (optionChoice == 7) {
