@@ -91,9 +91,47 @@ public class PayStationImpl implements PayStation {
     }
 
     public static void main(String[] args) {
+
+        // Town Choice Input
         System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
         Scanner console = new Scanner(System.in);
         int townChoice = console.nextInt();
+        while ((townChoice < 1) || (townChoice > 5)) {
+            System.out.println("Invalid input; please reselect town. ");
+            townChoice = console.nextInt();
+        }
         System.out.println("You have selected: " + townChoice);
+
+        // Menu Options
+        System.out.println("Choose an option:\n1) Deposit coins\n2) Display Time Bought\n3) Buy Ticket\n4) Admin Options\n");
+        int optionChoice = console.nextInt();
+        while ((optionChoice < 1) || (optionChoice > 4)) {
+            System.out.println("Invalid input; please reselect valid option. ");
+            optionChoice = console.nextInt();
+        }
+
+        switch (optionChoice) {
+            case 1:
+            System.out.println("Deposit coins here; valid coins are 5, 10, 25. Type 'continue' when done depositing coins: ");
+            int coin;
+            boolean done = false;
+            while () {
+                
+            }
+        }
+
+        // If Admin Chosen, validate password.
+        if (optionChoice == 4) {
+            System.out.print("Please enter admin password: ");
+            int passwordEntry = console.nextInt();
+            if (passwordEntry == 123) {
+                System.out.println("Access granted, Please select one of the following options:\n1) Empty\n2) Change Rate Strategy");
+            } else {
+                System.out.println("Invalid password, failsafe protection activating; paystation shutting off");
+                System.exit(0);
+            }
+            optionChoice = console.nextInt();
+            // TODO: admin options
+        }
     }
 }
