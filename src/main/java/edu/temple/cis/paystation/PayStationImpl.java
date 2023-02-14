@@ -1,4 +1,5 @@
 package edu.temple.cis.paystation;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.Calendar;
 
@@ -23,8 +24,11 @@ import java.util.Calendar;
  */
 
 public class PayStationImpl implements PayStation {
-    private int insertedSoFar, timeBought, totalMoney, townChoice;
+    private int insertedSoFar, timeBought, totalMoney, townChoice, unchangedTown;
     private Map<Integer, Integer> coinMap;
+    public Calendar calendar = Calendar.getInstance();
+    private int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
 
     // Constructor initializes instance variables
     public PayStationImpl(){
@@ -53,7 +57,18 @@ public class PayStationImpl implements PayStation {
         coinMap.put(coinValue, coinMap.getOrDefault(coinValue, 0) + 1);
 
         insertedSoFar += coinValue;
-        timeBought = insertedSoFar / 5 * 2;
+
+        if (townChoice == 1) {
+            changeRateLinear1();
+        } else if (townChoice == 2) {
+            changeRateProgressive();
+        } else if (townChoice == 3) {
+            changeRateAlternating1(dayOfWeek);
+        } else if (townChoice == 4) {
+            changeRateLinear2();
+        } else {
+            changeRateAlternating2(dayOfWeek);
+        }
     }
 
     @Override
@@ -144,27 +159,16 @@ public class PayStationImpl implements PayStation {
     public static void main(String[] args) throws IllegalCoinException {
         PayStationImpl ps = new PayStationImpl();
         boolean complete = false;
-        Calendar calendar = Calendar.getInstance();
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
 
         // Town Choice Input
         System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
         Scanner console = new Scanner(System.in);
-        int townChoice = console.nextInt();
-        while ((townChoice < 1) || (townChoice > 5)) {
+        ps.townChoice = console.nextInt();
+        while ((ps.townChoice < 1) || (ps.townChoice > 5)) {
             System.out.println("Invalid input; please reselect town. ");
-            townChoice = console.nextInt();
+            ps.townChoice = console.nextInt();
         }
-        System.out.println("You have selected: " + townChoice);
-        if (townChoice == 2) {
-            ps.changeRateProgressive();
-        } else if (townChoice == 3) {
-            ps.changeRateAlternating1(dayOfWeek);
-        } else if (townChoice == 4) {
-            ps.changeRateLinear2();
-        } else {
-            ps.changeRateAlternating2(dayOfWeek);
-        }
+        System.out.println("You have selected: " + ps.townChoice);
 
         // Menu Options
         int optionChoice;
@@ -238,15 +242,15 @@ public class PayStationImpl implements PayStation {
                     if ((rateChange < 1) || (rateChange > 5)) {
                         System.out.println("Invalid entry, try again.");
                     } else if (rateChange == 1) {
-                        ps.changeRateLinear1();
+                        ps.townChoice = 1;
                     } else if (rateChange == 2) {
-                        ps.changeRateProgressive();
+                        ps.townChoice = 2;
                     } else if (rateChange == 3) {
-                        ps.changeRateAlternating1(dayOfWeek);
+                        ps.townChoice = 3;
                     } else if (rateChange == 4) {
-                        ps.changeRateLinear2();
+                        ps.townChoice = 4;
                     } else {
-                        ps.changeRateAlternating2(dayOfWeek);
+                        ps.townChoice = 5;
                     }
                 }
             } else if (optionChoice == 7) {
