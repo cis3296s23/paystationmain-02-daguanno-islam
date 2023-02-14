@@ -286,4 +286,5 @@ public class PayStationImplTest {
         ps.buy();
         assertTrue("Coin map should be empty after buy", ps.cancel().isEmpty());
     }
+
 }

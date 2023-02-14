@@ -2,7 +2,6 @@ package edu.temple.cis.paystation;
 import java.util.*;
 import java.util.Calendar;
 
-
 /**
  * Implementation of the pay station.
  *
@@ -22,18 +21,15 @@ import java.util.Calendar;
  * implied. You may study, use, modify, and distribute it for non-commercial
  * purposes. For any commercial use, see http://www.baerbak.com/
  */
-public class PayStationImpl implements PayStation {
-    
-    private int insertedSoFar, timeBought, totalMoney;
-    private Map<Integer, Integer> coinMap;
 
-    private RateStrategy rateStrategy;
+public class PayStationImpl implements PayStation {
+    private int insertedSoFar, timeBought, totalMoney, townChoice;
+    private Map<Integer, Integer> coinMap;
 
     // Constructor initializes instance variables
     public PayStationImpl(){
         insertedSoFar = timeBought = totalMoney = 0;
         coinMap = new HashMap<>();
-        rateStrategy = new LinearRateStrategy1();
     }
     
     @Override
@@ -57,9 +53,7 @@ public class PayStationImpl implements PayStation {
         coinMap.put(coinValue, coinMap.getOrDefault(coinValue, 0) + 1);
 
         insertedSoFar += coinValue;
-        //The following code assigns timeBought from the current rateStrategy's calculateTime function
-        timeBought = rateStrategy.calculateTime(coinValue);
-        //timeBought = insertedSoFar / 5 * 2;
+        timeBought = insertedSoFar / 5 * 2;
     }
 
     @Override
@@ -96,70 +90,143 @@ public class PayStationImpl implements PayStation {
         totalMoney = 0;
         return temp;
     }
-    /*
-    the following function changes the rate strategy at run time. The user is prompted to
-    pick which rate strategy to use and then the rate strategy is changed from the default
-    strategy.
-     */
-    @Override
-    public void changeRateStrategy(RateStrategy newRateStrategy){
-        this.rateStrategy = newRateStrategy;
+
+    public void changeRateLinear1() {
+        timeBought = insertedSoFar / 5 * 2;
     }
 
-    public void main(String[] args) throws IllegalCoinException {
-        Scanner scanner = new Scanner(System.in);
+    public void changeRateLinear2() {
+        timeBought = insertedSoFar / 5;
+    }
 
-        int choice;
-        //this code uses a do-while loop for the options
+    public void changeRateAlternating1(int dayOfWeek) {
+        if (dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY) {
+            timeBought =  (insertedSoFar * 2) / 5;
+        } else {//if a weekday then progressive rate
+            if (insertedSoFar < 150) {
+                timeBought =  (insertedSoFar * 2) / 5;
+            }
+            else if ((insertedSoFar >= 150) && (insertedSoFar < 350)) {
+                double d = ((insertedSoFar - 150) * 0.3) + 60;
+                timeBought =  (int) d;
+            }
+            else {
+                timeBought = (insertedSoFar - 350) / 5 + 120;
+            }
+        }
+    }
+
+    public void changeRateAlternating2(int dayOfWeek) {
+        if (dayOfWeek >= Calendar.MONDAY && dayOfWeek <= Calendar.FRIDAY) {
+            timeBought = insertedSoFar / 5 * 2;
+        } else {
+            System.out.println("Parking is free on weekends!");
+            System.out.println("Coins have been returned back.");
+            cancel();
+        }
+    }
+    
+    public void changeRateProgressive() {
+        
+        if (insertedSoFar < 150) {
+            timeBought = (insertedSoFar * 2) / 5;
+        }
+        else if ((insertedSoFar >= 150) && (insertedSoFar < 350)) {
+            double d = ((insertedSoFar - 150) * 0.3) + 60;
+            timeBought = (int) d;
+        }
+        else {
+            timeBought = (insertedSoFar - 350) / 5 + 120;
+        }
+    }
+
+
+    public static void main(String[] args) throws IllegalCoinException {
+        PayStationImpl ps = new PayStationImpl();
+        boolean complete = false;
+        Calendar calendar = Calendar.getInstance();
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+
+        // Town Choice Input
+        System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
+        Scanner console = new Scanner(System.in);
+        int townChoice = console.nextInt();
+        while ((townChoice < 1) || (townChoice > 5)) {
+            System.out.println("Invalid input; please reselect town. ");
+            townChoice = console.nextInt();
+        }
+        System.out.println("You have selected: " + townChoice);
+        if (townChoice == 2) {
+            ps.changeRateProgressive();
+        } else if (townChoice == 3) {
+            ps.changeRateAlternating1(dayOfWeek);
+        } else if (townChoice == 4) {
+            ps.changeRateLinear2();
+        } else {
+            ps.changeRateAlternating2(dayOfWeek);
+        }
+
+        // Menu Options
+        int optionChoice;
         do {
-            //print out the different options for the user and save as an int
-            System.out.println("\nPlease select a choice:");
-            System.out.println("1. Deposit Coins");
-            System.out.println("2. Display");
-            System.out.println("3. Buy Ticket");
-            System.out.println("4. Cancel");
-            System.out.println("5. Empty (Admin)");
-            System.out.println("6. Change Rate Strategy (Admin)");
-            System.out.print("Enter choice (1-6): ");
+            System.out.println("");
+            System.out.println("Choose an option:");
+            System.out.println("1) Deposit coins");
+            System.out.println("2) Display Time Bought");
+            System.out.println("3) Buy Ticket");
+            System.out.println("4) Cancel");
+            System.out.println("5) Empty (Admin)");
+            System.out.println("6) Change Rate Strategy (Admin)");
+            System.out.println("7) Exit");
+            optionChoice = console.nextInt();
+            while ((optionChoice < 1) || (optionChoice > 7)) {
+                System.out.println("Invalid input; please reselect valid option. ");
+                optionChoice = console.nextInt();
+            }
 
-            choice = scanner.nextInt();//get the choice
-
-            switch (choice) {//switch case for the options
-                case 1: //Depositing coins
-                    System.out.println("Deposit Coins selected");
-                    System.out.println("Enter the coin value (5, 10, 25) and press enter. To stop depositing coins, type done without entering a value:");
-                    int coinValue;
-                    while (true) {//this will loop until the user enters done
-                        if (scanner.hasNextInt()) {//get the coin  value, add this coin then repeat
-                            coinValue = scanner.nextInt();
-                            addPayment(coinValue);
-                            System.out.println("Enter the next coin value (5, 10, 25) or type done to stop depositing coins:");
-                        } else {
-                            break;
-                        }
+            if (optionChoice == 1) {
+                System.out.println("Deposit coins here; valid coins are 5, 10, 25.");
+                int coin;
+                boolean done = false;
+                while (!done) {
+                    coin = console.nextInt();
+                    if (coin == 0) {
+                        System.out.println("Coins sucessfully deposited.");
+                        break;
+                    } else {
+                        ps.addPayment(coin);
+                        System.out.println("Payment added. Continue entering coins or press 0 to exit: ");
                     }
-                    break;
-                case 2:
-                    System.out.println("Display selected");
-                    int display = readDisplay();
-                    System.out.println("Time purchased: " + display + " minutes");
-                    break;
-                case 3:
-                    System.out.println("Buy Ticket selected");
-                    Receipt receipt = buy();
-                    //receipt object created from the buy() function
-                    System.out.println("Parking receipt purchased.");
-                    System.out.println("Receipt valid for " + receipt.value() + " minutes.");
-                    break;
-                case 4:
-                    System.out.println("Cancel selected");
-                    break;
-                case 5:
-                    System.out.println("Empty (Admin) selected");
-                    empty();
+                }
+
+            } else if (optionChoice == 2) {
+                System.out.println("You selected the display.");
+                int display = ps.readDisplay();
+                System.out.println("Total time purchased: " + display + " minutes.");
+
+            } else if (optionChoice == 3) {
+                System.out.println("Buy Ticket selected.");
+                Receipt receipt = ps.buy();
+                System.out.println("Parking receipt purchased.");
+                System.out.println("Receipt valid for " + receipt.value() + " minutes.");
+
+            } else if (optionChoice == 4) {
+                System.out.println("Cancel selected.\nHere are your coins back: " + ps.cancel());
+
+            } else if ((optionChoice == 5) || (optionChoice == 6)) {
+                System.out.print("Please enter admin password: ");
+                int passwordEntry = console.nextInt();
+                if (passwordEntry == 123) {
+                    System.out.println("Access granted");
+                } else {
+                    System.out.println("Invalid password, failsafe protection activating; paystation shutting off");
+                    System.exit(0);
+                }
+                if (optionChoice == 5) {
+                    ps.empty();
                     System.out.println("Pay Station has been emptied");
-                    break;
-                case 6:
+                }
+                if (optionChoice == 6) {
                     System.out.println("Change Rate Strategy (Admin) selected");
                     System.out.println("Please choose one of the following options: ");
                     System.out.println("1. Alphatown");
@@ -167,49 +234,24 @@ public class PayStationImpl implements PayStation {
                     System.out.println("3. Gammatown");
                     System.out.println("4. Deltatown");
                     System.out.println("5. Omegatown");
-
-                    int townChoice = scanner.nextInt();
-                    //here we input the date manually for testing purposes
-                    int dayOfWeek = Calendar.MONDAY;
-
-
-                    switch (townChoice) {
-                        case 1://change rateStrategy to the chosen strategy and pass to changeRateStrategy
-                            System.out.println("You have selected Alphatown");
-                            rateStrategy = new LinearRateStrategy1();
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 2:
-                            System.out.println("You have selected Betatown");
-                            rateStrategy = new ProgressiveRateStrategy();
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 3:
-                            System.out.println("You have selected Gammatown");
-                            //here we input the date manually for testing purposes
-                            rateStrategy = new AlternatingRate1(dayOfWeek);
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 4:
-                            System.out.println("You have selected Deltatown");
-                            rateStrategy = new LinearRateStrategy2();
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 5:
-                            System.out.println("You have selected Omegatown");
-                            rateStrategy = new AlternatingRate2(dayOfWeek);
-                            break;
-                        default:
-                            System.out.println("Invalid selection. Please try again.");
+                    int rateChange = console.nextInt();
+                    if ((rateChange < 1) || (rateChange > 5)) {
+                        System.out.println("Invalid entry, try again.");
+                    } else if (rateChange == 1) {
+                        ps.changeRateLinear1();
+                    } else if (rateChange == 2) {
+                        ps.changeRateProgressive();
+                    } else if (rateChange == 3) {
+                        ps.changeRateAlternating1(dayOfWeek);
+                    } else if (rateChange == 4) {
+                        ps.changeRateLinear2();
+                    } else {
+                        ps.changeRateAlternating2(dayOfWeek);
                     }
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+                }
+            } else if (optionChoice == 7) {
+                System.exit(0);
             }
-        }
-        while (choice != 4);//menu will loop until 4 is chosen
-
-        System.out.println("Exiting program...");
+        } while (!complete);
     }
-
 }
