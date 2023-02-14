@@ -1,7 +1,5 @@
 package edu.temple.cis.paystation;
 import java.util.*;
-import java.util.Calendar;
-
 
 /**
  * Implementation of the pay station.
@@ -27,13 +25,10 @@ public class PayStationImpl implements PayStation {
     private int insertedSoFar, timeBought, totalMoney;
     private Map<Integer, Integer> coinMap;
 
-    private RateStrategy rateStrategy;
-
     // Constructor initializes instance variables
     public PayStationImpl(){
         insertedSoFar = timeBought = totalMoney = 0;
         coinMap = new HashMap<>();
-        rateStrategy = new LinearRateStrategy1();
     }
     
     @Override
@@ -57,9 +52,7 @@ public class PayStationImpl implements PayStation {
         coinMap.put(coinValue, coinMap.getOrDefault(coinValue, 0) + 1);
 
         insertedSoFar += coinValue;
-        //The following code assigns timeBought from the current rateStrategy's calculateTime function
-        timeBought = rateStrategy.calculateTime(coinValue);
-        //timeBought = insertedSoFar / 5 * 2;
+        timeBought = insertedSoFar / 5 * 2;
     }
 
     @Override
@@ -96,120 +89,11 @@ public class PayStationImpl implements PayStation {
         totalMoney = 0;
         return temp;
     }
-    /*
-    the following function changes the rate strategy at run time. The user is prompted to
-    pick which rate strategy to use and then the rate strategy is changed from the default
-    strategy.
-     */
-    @Override
-    public void changeRateStrategy(RateStrategy newRateStrategy){
-        this.rateStrategy = newRateStrategy;
+
+    public static void main(String[] args) {
+        System.out.println("Select the town which you reside, numerical input only:\n" + "1 - AlphaTown\n" + "2 - BetaTown\n" + "3 - GammaTown\n" + "4 - DeltaTown\n" + "5 - OmegaTown\n");
+        Scanner console = new Scanner(System.in);
+        int townChoice = console.nextInt();
+        System.out.println("You have selected: " + townChoice);
     }
-
-    public void main(String[] args) throws IllegalCoinException {
-        Scanner scanner = new Scanner(System.in);
-
-        int choice;
-        //this code uses a do-while loop for the options
-        do {
-            //print out the different options for the user and save as an int
-            System.out.println("\nPlease select a choice:");
-            System.out.println("1. Deposit Coins");
-            System.out.println("2. Display");
-            System.out.println("3. Buy Ticket");
-            System.out.println("4. Cancel");
-            System.out.println("5. Empty (Admin)");
-            System.out.println("6. Change Rate Strategy (Admin)");
-            System.out.print("Enter choice (1-6): ");
-
-            choice = scanner.nextInt();//get the choice
-
-            switch (choice) {//switch case for the options
-                case 1: //Depositing coins
-                    System.out.println("Deposit Coins selected");
-                    System.out.println("Enter the coin value (5, 10, 25) and press enter. To stop depositing coins, type done without entering a value:");
-                    int coinValue;
-                    while (true) {//this will loop until the user enters done
-                        if (scanner.hasNextInt()) {//get the coin  value, add this coin then repeat
-                            coinValue = scanner.nextInt();
-                            addPayment(coinValue);
-                            System.out.println("Enter the next coin value (5, 10, 25) or type done to stop depositing coins:");
-                        } else {
-                            break;
-                        }
-                    }
-                    break;
-                case 2:
-                    System.out.println("Display selected");
-                    int display = readDisplay();
-                    System.out.println("Time purchased: " + display + " minutes");
-                    break;
-                case 3:
-                    System.out.println("Buy Ticket selected");
-                    Receipt receipt = buy();
-                    //receipt object created from the buy() function
-                    System.out.println("Parking receipt purchased.");
-                    System.out.println("Receipt valid for " + receipt.value() + " minutes.");
-                    break;
-                case 4:
-                    System.out.println("Cancel selected");
-                    break;
-                case 5:
-                    System.out.println("Empty (Admin) selected");
-                    empty();
-                    System.out.println("Pay Station has been emptied");
-                    break;
-                case 6:
-                    System.out.println("Change Rate Strategy (Admin) selected");
-                    System.out.println("Please choose one of the following options: ");
-                    System.out.println("1. Alphatown");
-                    System.out.println("2. Betatown");
-                    System.out.println("3. Gammatown");
-                    System.out.println("4. Deltatown");
-                    System.out.println("5. Omegatown");
-
-                    int townChoice = scanner.nextInt();
-                    //here we input the date manually for testing purposes
-                    int dayOfWeek = Calendar.MONDAY;
-
-
-                    switch (townChoice) {
-                        case 1://change rateStrategy to the chosen strategy and pass to changeRateStrategy
-                            System.out.println("You have selected Alphatown");
-                            rateStrategy = new LinearRateStrategy1();
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 2:
-                            System.out.println("You have selected Betatown");
-                            rateStrategy = new ProgressiveRateStrategy();
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 3:
-                            System.out.println("You have selected Gammatown");
-                            //here we input the date manually for testing purposes
-                            rateStrategy = new AlternatingRate1(dayOfWeek);
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 4:
-                            System.out.println("You have selected Deltatown");
-                            rateStrategy = new LinearRateStrategy2();
-                            changeRateStrategy(rateStrategy);
-                            break;
-                        case 5:
-                            System.out.println("You have selected Omegatown");
-                            rateStrategy = new AlternatingRate2(dayOfWeek);
-                            break;
-                        default:
-                            System.out.println("Invalid selection. Please try again.");
-                    }
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-            }
-        }
-        while (choice != 4);//menu will loop until 4 is chosen
-
-        System.out.println("Exiting program...");
-    }
-
 }
